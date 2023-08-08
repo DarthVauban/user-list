@@ -1,0 +1,6 @@
+.PostSkeleton {
+    display: flex;
+    flex-direction: column;
+    max-width: 100%;
+    padding: 8px 16px;
+}

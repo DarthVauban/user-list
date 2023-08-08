@@ -1,58 +1,56 @@
-import React from 'react';
-import logo from './logo.svg';
-import { Counter } from './features/counter/Counter';
-import './App.css';
+import React, {useEffect} from 'react';
+import {useDispatch, useSelector} from "react-redux";
+import {loadUsers} from "./store/Users/usersActionCreators";
+import UserList from "./components/userList/UserList";
+import PostsModal from "./components/PostItem/PostsModal";
+import {loadPosts} from "./store/Posts/postsActionCreator";
+import "./App.css"
+import UserItemSkeleton from "./components/UserItem/UserItemSkeleton";
+
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <Counter />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <span>
-          <span>Learn </span>
-          <a
-            className="App-link"
-            href="https://reactjs.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux-toolkit.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux Toolkit
-          </a>
-          ,<span> and </span>
-          <a
-            className="App-link"
-            href="https://react-redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React Redux
-          </a>
-        </span>
-      </header>
-    </div>
-  );
+
+    const [open, setOpen] = React.useState(false);
+
+    const {posts} = useSelector(state => state.posts)
+    const {users, isLoading} = useSelector(state => state.users)
+    const dispatch = useDispatch()
+
+    useEffect(() => {
+        dispatch(loadUsers())
+    }, [])
+
+
+    const handleClickOpen = (id) => {
+        dispatch(loadPosts(id))
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    };
+    useEffect(() =>{
+        console.log(isLoading)
+    }, [isLoading])
+    return (
+        <div className="app">
+            {!isLoading ? <UserList
+                users={users}
+                openPosts={handleClickOpen}
+            />
+            : <div className="skeletonContainer">
+                <UserItemSkeleton
+                    count={10}
+                />
+            </div>}
+            <PostsModal
+                open={open}
+                closePosts={handleClose}
+                posts={posts}
+            />
+
+        </div>
+    );
 }
 
 export default App;
